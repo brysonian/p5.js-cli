@@ -1,0 +1,11 @@
+{
+  "name": "p5js-cli",
+  "version": "0.0.1",
+  "private": false,
+  "scripts": {
+    "start": "p5js"
+  },
+  "dependencies": {
+    "request":"*"
+  }
+}

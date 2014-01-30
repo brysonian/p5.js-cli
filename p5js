@@ -1,0 +1,53 @@
+#!/usr/bin/env node
+
+var request	= require('request'),
+    http		= require('http'),
+    fs			= require('fs'),
+		path		= require('path'),
+		exec		= require('child_process').exec;
+
+
+var p5jssrc = path.resolve('../p5.js/dist/p5.js');
+
+var src = path.resolve(process.argv[2]);
+
+
+http.createServer(function (request, response) {
+	switch(request.url) {
+		case p5jssrc:
+			response.writeHead(200, {"Content-Type": "application/javascript"});
+			response.end(fs.readFileSync(p5jssrc, 'utf8'));
+			break;
+
+		case src:
+			response.writeHead(200, {"Content-Type": "application/javascript"});
+			response.end(fs.readFileSync(src, 'utf8'));
+			break;
+
+		case '/':
+			response.writeHead(200, {"Content-Type": "text/html"});
+			var html = '<!doctype html>' +
+									'<html>' +
+										'<head>' +
+											'<script language="javascript" type="text/javascript" src="'+p5jssrc+'"></script>' +
+											'<script language="javascript" type="text/javascript" src="'+src+'"></script>' +
+											'<script language="javascript" type="text/javascript">window.onbeforeunload = function(){var xmlHttp = null;xmlHttp = new XMLHttpRequest();xmlHttp.open( "GET", "/quit", false );xmlHttp.send( null );return xmlHttp.responseText;}</script>' +
+									'</head>' +
+									'<body></body></html>\n';
+			response.end(html);
+			break;
+
+		case '/quit':
+			process.exit();
+			break;
+	}
+
+}).listen(3000);
+
+exec('open "http://localhost:3000"',
+  function (error, stdout, stderr) {
+    if (error !== null) {
+      console.log('exec error: ' + error);
+      return;
+    }
+});
